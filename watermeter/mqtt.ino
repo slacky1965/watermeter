@@ -50,7 +50,7 @@ void callback(char *topic, byte *payload, unsigned int len) {
       wmConfig.hotTime = timeFromServer;
       saveNewConfig = true;
     } else if (waterFromServer > wmConfig.hotWater) {
-      wmConfig.hotWater = waterFromServer + wmConfig.litersInPulse;
+      wmConfig.hotWater = waterFromServer + wmConfig.litersPerPulse;
       wmConfig.hotTime = timeFromServer;
       saveNewConfig = true;
     }
@@ -60,7 +60,7 @@ void callback(char *topic, byte *payload, unsigned int len) {
       wmConfig.coldTime = timeFromServer;
       saveNewConfig = true;
     } else if (waterFromServer > wmConfig.coldWater) {
-      wmConfig.coldWater = waterFromServer + wmConfig.litersInPulse;
+      wmConfig.coldWater = waterFromServer + wmConfig.litersPerPulse;
       wmConfig.coldTime = timeFromServer;
       saveNewConfig = true;
     }

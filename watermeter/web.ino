@@ -545,7 +545,7 @@ void handleConfig() {
   s += "<div class=\"input-w\">\r\n";
   s += "<label for=\"countw\">Liters in pulse:</label>\r\n";
   s += "<input type=\"number\" name=\"countw\" id=\"countw\" value=\"";
-  s += wmConfig.litersInPulse;
+  s += wmConfig.litersPerPulse;
   s += "\" min=\"1\" max=\"100\">\r\n";
   s += "</div>\r\n";
   s += "</p>\r\n";
@@ -666,7 +666,7 @@ void parssingSettings() {
       config.coldTime = now();
     } else if (s == "countw") {
       s = webServer.arg(i);
-      config.litersInPulse = s.toInt();
+      config.litersPerPulse = s.toInt();
     } else if (s == "reboot") {
       rebootNow = true;
     } else if (s == "defconfig") {

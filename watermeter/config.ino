@@ -34,7 +34,7 @@ void initDefConfig(_config *config) {
   s = NTP_SERVER_NAME + '\0';
   s.toCharArray(config->ntpServerName, s.length()+1);
   config->timeZone = TIME_ZONE;
-  config->litersInPulse = LITERS_IN_PULSE;
+  config->litersPerPulse = LITERS_PER_PULSE;
   config->hotTime = config->coldTime = now();
   config->hotWater = config->coldWater = 0;
 
@@ -74,7 +74,7 @@ void setConfig(_config *config) {
   s = config->ntpServerName + '\0';
   s.toCharArray(wmConfig.ntpServerName, s.length()+1);
   wmConfig.timeZone = config->timeZone;
-  wmConfig.litersInPulse = config->litersInPulse;
+  wmConfig.litersPerPulse = config->litersPerPulse;
   wmConfig.hotTime = config->hotTime;
   wmConfig.coldTime = config->coldTime;
   wmConfig.hotWater = config->hotWater;

@@ -33,7 +33,7 @@
 #define MQTT_PASSWORD "1111"                     /* mqtt password                     */
 #define MQTT_BROKER "192.168.1.1"                /* URL mqtt broker                   */
 #define MQTT_TOPIC "/WaterMeter"                 /* Primary mqtt topic name           */
-#define LITERS_IN_PULSE 10                       /* How many liters in one pulse      */
+#define LITERS_PER_PULSE 10                      /* How many liters per one pulse     */
 #define TIME_ZONE 3                              /* Default Time Zone                 */
 
 /* for TimeLib (NTP and clock) */
@@ -122,7 +122,7 @@ typedef struct config {
   char mqttTopic[64];          /* mqtt topic                            */
   char ntpServerName[32];      /* URL NTP server                        */
   int timeZone;                /* Time Zone                             */
-  byte litersInPulse;          /* liters in pulse                       */
+  byte litersPerPulse;         /* liters per pulse                      */
   time_t hotTime;              /* Last update time of hot water         */
   unsigned long hotWater;      /* Last number of liters hot water       */
   time_t coldTime;             /* Last update time of cold water        */
@@ -177,7 +177,7 @@ void loop () {
     wmConfig.hotTime = now();
     s = "";
     s += wmConfig.hotTime;
-    wmConfig.hotWater += counterHotWater * wmConfig.litersInPulse;
+    wmConfig.hotWater += counterHotWater * wmConfig.litersPerPulse;
     s = s + " " + wmConfig.hotWater;
     if (DEBUG) {
       Serial.print(mqttTopicHotOut + " <== "); Serial.println(s);
@@ -192,7 +192,7 @@ void loop () {
     wmConfig.coldTime = now();
     s = "";
     s += wmConfig.coldTime;
-    wmConfig.coldWater += counterColdWater * wmConfig.litersInPulse;
+    wmConfig.coldWater += counterColdWater * wmConfig.litersPerPulse;
     s = s + " " + wmConfig.coldWater;
     if (DEBUG) {
       Serial.print(mqttTopicColdOut + " <== "); Serial.println(s);
