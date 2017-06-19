@@ -4,7 +4,7 @@ use DBI;
 use strict;
 use Text::ParseWords;
 
-my $litersinpulse = 10;
+my $litersperpulse = 10;
 
 my $mqttpub = "/opt/bin/mosquitto_pub";
 my $mqttuser = "test";
@@ -86,7 +86,7 @@ if (@msg < 3) {
     $time = $stime;
   } else  {
     if ($swater == $water) {
-      $water = $water + $litersinpulse;
+      $water = $water + $litersperpulse;
       $new = "NEW";
     }
     $stmt = qq(INSERT INTO '$tableName' (ID, TIME,COUNTER)
