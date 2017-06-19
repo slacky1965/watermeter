@@ -229,6 +229,7 @@ void loop () {
             staModeNow = true;
             wmConfig.apMode = false;
             responseNTP = false;
+            ntpReconnectTime = 0;
           }
           break;
         }
