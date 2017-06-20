@@ -707,7 +707,8 @@ void parssingSettings() {
 
   if (saveNewConfig) {
 
-    if (strcmp(wmConfig.webAdminLogin, config.webAdminLogin) != 0 || strcmp(wmConfig.webAdminPassword, config.webAdminPassword) != 0) newSave = true;
+    if (strcmp(wmConfig.webAdminLogin, config.webAdminLogin) != 0 || strcmp(wmConfig.webAdminPassword, config.webAdminPassword) != 0 ||
+               wmConfig.fullSecurity != config.fullSecurity) newSave = true;
 
     if (apModeNow) {
       if (!config.apMode || strcmp(wmConfig.apSsid, config.apSsid) != 0 || strcmp(wmConfig.apPassword, config.apPassword) != 0)  {
