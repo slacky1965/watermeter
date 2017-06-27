@@ -36,7 +36,6 @@ my $tableName = uc($topic);
 $tableName =~ s/\//_/g;
 $topic =~ s/\/Out/\/In/;
 
-
 my $dbh = DBI->connect($dbd, $username, $password, { RaiseError => 1 })
                       or die $DBI::errstr;
 print STDERR "Database opened successfully\n";
