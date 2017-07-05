@@ -62,8 +62,7 @@ static PROGMEM prog_uint32_t crc_table[16] = {
 };
 
 /* For WiFi */
-uint8_t MacAddress[WL_MAC_ADDR_LENGTH];
-String staMacStr;
+String macAddress;
 WiFiClient wifiClient;
 
 /* For MQTT */

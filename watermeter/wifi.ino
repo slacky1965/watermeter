@@ -39,17 +39,9 @@ bool startWiFiSTA() {
 
   delay(1000);
 
-  String mac = WiFi.macAddress();
-  String mac2 = "";
+  macAddress = WiFi.macAddress();
+  String mac2 = makeMacAddress();
 
-  for (int i = 0; i < mac.length(); i++) {
-    if (mac[i] != ':') mac2 += mac[i];
-  }
-
-  mac2.toUpperCase();
-
-/*  String hostName = WEB_WATERMETER_FIRST_NAME;
-  hostName += WEB_WATERMETER_LAST_NAME;*/
   String hostName = AP_SSID;
   hostName += "-";
   hostName += mac2;
@@ -75,20 +67,10 @@ bool startWiFiSTA() {
     return false;
   }
   
-  WiFi.macAddress(MacAddress);
-  
-  staMacStr = String(MacAddress[WL_MAC_ADDR_LENGTH - 6], HEX) + ":" +
-              String(MacAddress[WL_MAC_ADDR_LENGTH - 5], HEX) + ":" +
-              String(MacAddress[WL_MAC_ADDR_LENGTH - 4], HEX) + ":" +
-              String(MacAddress[WL_MAC_ADDR_LENGTH - 3], HEX) + ":" +
-              String(MacAddress[WL_MAC_ADDR_LENGTH - 2], HEX) + ":" +
-              String(MacAddress[WL_MAC_ADDR_LENGTH - 1], HEX);
-  staMacStr.toUpperCase();
-  
   if (DEBUG) {
     Serial.print("Connected! IP address: ");
     Serial.println(WiFi.localIP());
-    Serial.print("MacAddress "); Serial.println(staMacStr);
+    Serial.print("MacAddress: "); Serial.println(macAddress);
   }
 
   restartWiFi = false;

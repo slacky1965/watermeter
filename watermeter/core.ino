@@ -1,15 +1,11 @@
 String makeMacAddress() {
   
   String mac = "";
-  
-  mac =  String(MacAddress[WL_MAC_ADDR_LENGTH - 6], HEX) +
-         String(MacAddress[WL_MAC_ADDR_LENGTH - 5], HEX) +
-         String(MacAddress[WL_MAC_ADDR_LENGTH - 4], HEX) +
-         String(MacAddress[WL_MAC_ADDR_LENGTH - 3], HEX) +
-         String(MacAddress[WL_MAC_ADDR_LENGTH - 2], HEX) +
-         String(MacAddress[WL_MAC_ADDR_LENGTH - 1], HEX);
-  mac.toUpperCase();
 
+  for (int i = 0; i < macAddress.length(); i++) {
+    if (macAddress[i] != ':') mac += macAddress[i];
+  }
+  
   return mac;
 }
 
