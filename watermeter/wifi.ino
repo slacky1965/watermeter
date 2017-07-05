@@ -40,16 +40,19 @@ bool startWiFiSTA() {
   delay(1000);
 
   String mac = WiFi.macAddress();
-  String macAddr = "";
+  String mac2 = "";
 
   for (int i = 0; i < mac.length(); i++) {
-    if (mac[i] != ':') macAddr += mac[i];
+    if (mac[i] != ':') mac2 += mac[i];
   }
 
-  String hostName = WEB_WATERMETER_FIRST_NAME;
-  hostName += WEB_WATERMETER_LAST_NAME;
-  hostName += "_";
-  hostName += macAddr;
+  mac2.toUpperCase();
+
+/*  String hostName = WEB_WATERMETER_FIRST_NAME;
+  hostName += WEB_WATERMETER_LAST_NAME;*/
+  String hostName = AP_SSID;
+  hostName += "-";
+  hostName += mac2;
 
   WiFi.hostname(hostName);
 
