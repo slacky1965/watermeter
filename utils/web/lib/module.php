@@ -134,11 +134,13 @@ nonfetch:
 	  $preCount = $row['COUNTER'];
 	  $counter += $count;
 	} else {
+	  $globCounter += $counter;
 	  if ($period == "month" && $counter > 5000) {
 	    $counter = 2000;
+	  } elseif ($period == "day" && $counter > 300) {
+		$counter = 300;
 	  }
 	  $wArray[$arr] = $counter;
-	  $globCounter += $counter;
 	  $counter = 0;
 	  $timeUpdate = 0;
 	  goto nonfetch;
