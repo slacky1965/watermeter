@@ -66,7 +66,7 @@ void initPin() {
 
 void startApMsg() {
   Serial.printf("WiFi network Name: %s, Password: %s\n", wmConfig.apSsid, wmConfig.apPassword);
-  Serial.print("and Go to: "); Serial.print(WiFi.softAPIP()); Serial.println(" please");
+  Serial.print("Go to: "); Serial.print(WiFi.softAPIP()); Serial.println(" please");
 }
 
 /* Init external interrupt           */

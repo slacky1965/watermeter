@@ -22,6 +22,8 @@ void startWiFiAP() {
 
 bool startWiFiSTA() {
   
+  String mac2, hostName;
+
   Serial.println("Start WiFi STA Mode");
   if (DEBUG) {
     Serial.printf("Connecting to: %s \n", wmConfig.staSsid);
@@ -40,9 +42,9 @@ bool startWiFiSTA() {
   delay(1000);
 
   macAddress = WiFi.macAddress();
-  String mac2 = makeMacAddress();
+  mac2 = makeMacAddress();
 
-  String hostName = AP_SSID;
+  hostName = AP_SSID;
   hostName += "-";
   hostName += mac2;
 
@@ -70,7 +72,7 @@ bool startWiFiSTA() {
   if (DEBUG) {
     Serial.print("Connected! IP address: ");
     Serial.println(WiFi.localIP());
-    Serial.print("MacAddress: "); Serial.println(macAddress);
+    Serial.printf("MacAddress: %s\n", macAddress.c_str());
   }
 
   restartWiFi = false;
