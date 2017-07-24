@@ -86,9 +86,11 @@ if ($period == "day") {
     
 }
 
+$globCounter = 0;
 makeColumns($hotWaterTable, $retHot, $hotArray);
 $titleText = $titleText."<br>Total $globCounter liters of hot water ";
 
+$globCounter = 0;
 makeColumns($coldWaterTable, $retCold, $coldArray);
 $titleText = $titleText." and $globCounter liters of cold water";
   
