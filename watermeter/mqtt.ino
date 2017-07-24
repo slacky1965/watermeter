@@ -17,7 +17,7 @@ void callback(char *topic, byte *payload, unsigned int len) {
   // handle message arrived
 
   time_t timeFromServer;
-  time_t waterFromServer;
+  unsigned long waterFromServer;
   unsigned int pos;
 
   String s = "";
