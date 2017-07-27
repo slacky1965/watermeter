@@ -98,7 +98,9 @@ $arrayTables = getTables();
    <input type="radio" name="period" id="month" value="month">
    <label for="month">Month</label>
    <input type="radio" name="period" id="year" value="year">
-   <label for="year">Year</label></p>
+   <label for="year">Year</label>
+   <input type="radio" name="period" id="alltime" value="alltime">
+   <label for="alltime">All Time</label></p>
    
    <p><input type="submit" value="Submit"></p>
 

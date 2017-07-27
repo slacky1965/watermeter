@@ -66,6 +66,20 @@ function getPreCount($waterTable, $id) {
   return $preCount;
 }
 
+function getLastCounter($waterTable) {
+
+  global $db;
+  
+  $sql = "SELECT * from $waterTable ORDER BY TIME DESC LIMIT 1";
+  
+  $ret = $db->query($sql);
+  $row = $ret->fetchArray(SQLITE3_ASSOC);
+  
+  $counter = $row['COUNTER'];
+  
+  return $counter;
+}
+
 
 function makeColumns($waterTable, $ret, &$wArray) {
 	

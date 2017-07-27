@@ -64,7 +64,7 @@ if ($period == "day") {
   }
 
 
-} else {
+} elseif ($period == "year") {
   
   $dateIn = mktime(0, 0, 0, 1, 1, $year);
   $dateEnd = mktime(23, 59, 59, 12, 31, $year);
@@ -86,13 +86,29 @@ if ($period == "day") {
     
 }
 
-$globCounter = 0;
-makeColumns($hotWaterTable, $retHot, $hotArray);
-$titleText = $titleText."<br>Total $globCounter liters of hot water ";
+if ($period != "alltime") {
 
-$globCounter = 0;
-makeColumns($coldWaterTable, $retCold, $coldArray);
-$titleText = $titleText." and $globCounter liters of cold water";
+  $globCounter = 0;
+  makeColumns($hotWaterTable, $retHot, $hotArray);
+  $titleText = $titleText."<br>Total $globCounter liters of hot water ";
+
+  $globCounter = 0;
+  makeColumns($coldWaterTable, $retCold, $coldArray);
+  $titleText = $titleText." and $globCounter liters of cold water";
+
+} else {
+	
+  $globCounter = getLastCounter($hotWaterTable);
+  $titleText = $titleText."<br>Total $globCounter liters of hot water ";
+  $hotArray[0] = $globCounter;;
+
+  $globCounter = getLastCounter($coldWaterTable);
+  $titleText = $titleText." and $globCounter liters of cold water";
+  $coldArray[0] = $globCounter;
+
+  $xAxis = "1";
+
+}
   
 
 ?>
@@ -114,7 +130,7 @@ $titleText = $titleText." and $globCounter liters of cold water";
 
 
 
-		<script type="text/javascript">
+<script type="text/javascript">
 
 Highcharts.chart('container', {
     chart: {
