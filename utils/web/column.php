@@ -197,3 +197,4 @@ Highcharts.chart('container', {
 <?php
   closeBase();
 ?>
+
