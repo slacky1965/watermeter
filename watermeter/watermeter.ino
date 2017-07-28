@@ -8,7 +8,7 @@
 
 #define DEBUG true
 
-#define SD_PIN D0                                 /* SD use D0 for Wemos D1 Mini       */
+#define SD_PIN D8                                 /* SD use D8 for Wemos D1 Mini       */
 #define HOT_PIN D1                                /* Number of Pin for hot water       */
 #define COLD_PIN D2                               /* Number of Pin for cold water      */ 
 
