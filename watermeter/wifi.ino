@@ -3,7 +3,7 @@ void startWiFiAP() {
   Serial.println("Start WiFi AP Mode");
   
   WiFi.disconnect(true);
-  delay(1000);
+  delay(500);
   WiFi.persistent(false);
   WiFi.setPhyMode(WIFI_PHY_MODE_11G);
   delay(500);
@@ -16,7 +16,7 @@ void startWiFiAP() {
   apModeNow = true;
   staModeNow = false;
 
-  delay(1000);
+  delay(500);
 }
 
 
@@ -39,7 +39,7 @@ bool startWiFiSTA() {
 
   WiFi.mode(WIFI_STA);
 
-  delay(1000);
+  delay(500);
 
   macAddress = WiFi.macAddress();
   mac2 = makeMacAddress();
@@ -52,7 +52,7 @@ bool startWiFiSTA() {
 
   WiFi.begin(wmConfig.staSsid, wmConfig.staPassword);
 
-  delay(1000);
+  delay(500);
 
   // Wait for connection
   uint8_t i = 0;
@@ -81,4 +81,5 @@ bool startWiFiSTA() {
 
   return true;
 }
+
 

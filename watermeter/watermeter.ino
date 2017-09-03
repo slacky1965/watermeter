@@ -6,11 +6,18 @@
 #include <PubSubClient.h>                        /* MQTT library from https://github.com/knolleary/pubsubclient */
 #include <TimeLib.h>                             /* Time library from https://github.com/PaulStoffregen/Time    */
 
-#define DEBUG true
+extern "C" {
+#include "gpio.h"
+#include "user_interface.h"
+}
 
-#define SD_PIN D8                                 /* SD use D8 for Wemos D1 Mini       */
+#define DEBUG true
+#define EXT_POWER_CONTROL true
+
+#define SD_PIN D8                                 /* microSD use D8 for Wemos D1 Mini  */
 #define HOT_PIN D1                                /* Number of Pin for hot water       */
-#define COLD_PIN D2                               /* Number of Pin for cold water      */ 
+#define COLD_PIN D2                               /* Number of Pin for cold water      */
+#define EXT_POWER_PIN D0                          /* Check external input Vcc          */ 
 
 /* Name and Version */
 #define PLATFORM "Wemos D1 mini & Micro SD"
@@ -90,6 +97,7 @@ ESP8266WebServer webServer(80);
 /* Flags */
 bool rebootNow = false;
 bool restartWiFi = false;
+bool offWiFi = false;
 bool apModeNow = true;
 bool staModeNow = false;
 bool staConfigure = false;
@@ -101,6 +109,11 @@ bool mqttRestart = false;
 bool mqttFirstStart = true;
 bool subsHotWater = false;
 bool subsColdWater = false;
+//bool restartFromSleep = false;
+
+/* Delay before sleep if external power is off */
+#define SLEEP_DELAY 500
+int sleepDelay = 0;
 
 /* Counter of water for interrupts */
 volatile unsigned long counterHotWater, counterColdWater;
@@ -141,6 +154,12 @@ void loop () {
   String s;
   webServer.handleClient();
 
+  checkExtPower();
+
+  if (offWiFi) {
+    sleepNow();
+  }
+  
   /* Restart connecting to NTP server one time in 60 sec */
   if (!responseNTP && !apModeNow && ntpReconnectTime+60000 < millis() && WiFi.status() == WL_CONNECTED)  {
     ntpReconnectTime = millis();
@@ -215,8 +234,13 @@ void loop () {
     mqttReconnectTime = millis();
   }
 
+  if (!offWiFi && wmConfig.apMode && !apModeNow && !staModeNow) {
+    startWiFiAP();
+  }
+
   /* checking connect to WiFi network one time in 30 sec */
-  if (!wmConfig.apMode && staConfigure && staReconnectTime+30000 < millis() && (apModeNow || (staModeNow && WiFi.status() != WL_CONNECTED))) {
+  if (!offWiFi && !wmConfig.apMode && staConfigure && staReconnectTime+30000 < millis() && 
+         ((apModeNow || (staModeNow && WiFi.status() != WL_CONNECTED)) || (!apModeNow && !staModeNow))) {
     staReconnectTime = millis();
     if (DEBUG) Serial.printf("Check WiFi network: %s\n", wmConfig.staSsid);
     int n = WiFi.scanNetworks(); 
@@ -232,6 +256,15 @@ void loop () {
           }
           break;
         }
+      }
+      if (!staModeNow && !apModeNow) {
+         if (DEBUG) Serial.println("No WiFi connect STA mode. Start AP mode");
+         startWiFiAP();
+      }
+    } else {
+      if (!apModeNow && !apModeNow) {
+        if (DEBUG) Serial.println("No WiFi networks. Start AP mode");
+        startWiFiAP();
       }
     }
   }

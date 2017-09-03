@@ -1,9 +1,5 @@
 void clearConfig(_config *config) {
-  byte *p = (byte*)config;
-  unsigned int i;
-  for (i = 0; i < sizeof(_config); i++) {
-    p[i] = 0;
-  }
+  memset((void*)config, 0, sizeof(_config));
 }
   
 void initDefConfig(_config *config) {

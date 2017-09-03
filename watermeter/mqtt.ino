@@ -129,7 +129,7 @@ void printMqttState() {
         Serial.println("MQTT_DISCONNECTED - the client is disconnected cleanly");
         break;
       case 0:
-        Serial.println("MQTT_CONNECTED - the cient is connected");
+        Serial.println("MQTT_CONNECTED - the client is connected");
         break;
       case 1:
         Serial.println("MQTT_CONNECT_BAD_PROTOCOL - the server doesn't support the requested version of MQTT");

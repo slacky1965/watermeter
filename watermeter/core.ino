@@ -36,6 +36,7 @@ String returnVccStr() {
   String Vcc = "Vcc: ";
   
   int voltInt = ESP.getVcc();
+//  Serial.printf("voltInt: %d\n", voltInt);
   unsigned long volt = (voltInt*117+5000)/100;
 
   v += volt;
@@ -62,6 +63,8 @@ void initPin() {
   digitalWrite(HOT_PIN, HIGH);
   pinMode(COLD_PIN, INPUT);
   digitalWrite(COLD_PIN, HIGH);
+  pinMode(EXT_POWER_PIN, INPUT_PULLDOWN_16);
+  
 }
 
 void startApMsg() {
@@ -71,8 +74,9 @@ void startApMsg() {
 
 /* Init external interrupt           */
 void initInterrupt() {
-  attachInterrupt(digitalPinToInterrupt(HOT_PIN), hotInterrupt, FALLING);
-  attachInterrupt(digitalPinToInterrupt(COLD_PIN), coldInterrupt, FALLING);
+  
+  attachInterrupt(digitalPinToInterrupt(HOT_PIN), hotInterrupt, RISING);
+  attachInterrupt(digitalPinToInterrupt(COLD_PIN), coldInterrupt, RISING);
 }
 
 /* External interrupt for hot water  */
@@ -83,5 +87,59 @@ void hotInterrupt() {
 /* External interrupt for cold water */
 void coldInterrupt() {
   counterColdWater++;
+}
+
+bool checkExtPower() {
+
+  if (!EXT_POWER_CONTROL) return true;
+
+  int val = digitalRead(EXT_POWER_PIN);
+
+  if (val) {
+    sleepDelay = 0;
+    if (offWiFi) {
+      if (DEBUG) Serial.println("External power high.");  
+      offWiFi = false;
+    }
+    return true;
+  }
+  else {
+    delay(1);
+    if (!offWiFi) {
+      if (sleepDelay > SLEEP_DELAY) {
+        if (DEBUG) Serial.println("External power low.");
+        offWiFi = true;
+        sleepDelay = 0;
+        return false;
+      } else {
+        sleepDelay++;
+      }
+    }
+    return false;
+  }
+}
+
+void sleepNow() {
+  if (DEBUG) Serial.println("Light sleep now ...");
+  apModeNow=staModeNow=false;
+  wifi_station_disconnect();
+  wifi_set_opmode(NULL_MODE);
+  wifi_fpm_set_sleep_type(LIGHT_SLEEP_T); //light sleep mode
+  gpio_pin_wakeup_enable(GPIO_ID_PIN(HOT_PIN), GPIO_PIN_INTR_LOLEVEL);  /* Set the interrupt to look for LOW pulses on HOT_PIN  */
+  gpio_pin_wakeup_enable(GPIO_ID_PIN(COLD_PIN), GPIO_PIN_INTR_LOLEVEL); /* Set the interrupt to look for LOW pulses on COLD_PIN */
+  wifi_fpm_open();
+  delay(100);
+  wifi_fpm_set_wakeup_cb(wakeupFromMotion); //wakeup callback
+  wifi_fpm_do_sleep(0xFFFFFFF); 
+  delay(100);
+}
+
+void wakeupFromMotion(void) {
+  ESP.wdtFeed();
+  initInterrupt();
+  wifi_fpm_close();
+/*  wifi_set_opmode(STATION_MODE);
+  wifi_station_connect();*/
+  if (DEBUG) Serial.println("Wake up from sleep.");
 }
 
