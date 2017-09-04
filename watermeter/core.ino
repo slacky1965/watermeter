@@ -30,7 +30,7 @@ unsigned long crc_byte(byte *b, int len) {
   return crc;
 }
 
-/* Vcc in volt */
+/* Vcc or Battery in volt */
 String returnVccStr() {
   String v = "";
   String Vcc;
@@ -59,7 +59,7 @@ String returnVccStr() {
     
 }
 
-/* received signal strength indicator in dBm */
+/* Received signal strength indicator in dBm */
 String returnRssiStr() {
   String rssi = "WiFi: ";
   rssi += WiFi.RSSI();
@@ -67,12 +67,10 @@ String returnRssiStr() {
   return rssi;
 }
 
-/* init PIN */
+/* Init PIN */
 void initPin() {
   pinMode(HOT_PIN, INPUT);
-  digitalWrite(HOT_PIN, HIGH);
   pinMode(COLD_PIN, INPUT);
-  digitalWrite(COLD_PIN, HIGH);
   if (EXT_POWER_CONTROL) {
     pinMode(EXT_POWER_PIN, INPUT_PULLDOWN_16);
   }
