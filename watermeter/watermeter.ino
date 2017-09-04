@@ -148,6 +148,7 @@ time_t mqttReconnectTime = 0;
 time_t staReconnectTime = 0;
 time_t ntpReconnectTime = 0;
 
+/* If EXT_POWER_CONTROL is false and pin A0 should be not connected to anything */
 #if (!EXT_POWER_CONTROL)
 ADC_MODE (ADC_VCC);
 #endif
