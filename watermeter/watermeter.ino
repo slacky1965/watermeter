@@ -17,7 +17,8 @@ extern "C" {
 #define SD_PIN D8                                 /* microSD use D8 for Wemos D1 Mini  */
 #define HOT_PIN D1                                /* Number of Pin for hot water       */
 #define COLD_PIN D2                               /* Number of Pin for cold water      */
-#define EXT_POWER_PIN D0                          /* Check external input Vcc          */ 
+#define EXT_POWER_PIN D0                          /* Check external input Vcc          */
+#define BAT_VOLT_PIN A0                           /* Measuring the battery voltage     */
 
 /* Name and Version */
 #define PLATFORM "Wemos D1 mini & Micro SD"
@@ -147,7 +148,9 @@ time_t mqttReconnectTime = 0;
 time_t staReconnectTime = 0;
 time_t ntpReconnectTime = 0;
 
+#if (!EXT_POWER_CONTROL)
 ADC_MODE (ADC_VCC);
+#endif
 
 
 void loop () {

@@ -33,20 +33,30 @@ unsigned long crc_byte(byte *b, int len) {
 /* Vcc in volt */
 String returnVccStr() {
   String v = "";
-  String Vcc = "Vcc: ";
+  String Vcc;
+  int volt;
+  int voltInt;
   
-  int voltInt = ESP.getVcc();
-//  Serial.printf("voltInt: %d\n", voltInt);
-  unsigned long volt = (voltInt*117+5000)/100;
+  if (!EXT_POWER_CONTROL) {
+    Vcc = "Vcc: ";
+    voltInt = ESP.getVcc();
+    volt = (voltInt*117+5000)/100;
+  } else {
+    Vcc = "Battery: ";
+    voltInt = analogRead(BAT_VOLT_PIN);
+    volt = (3300/1024*voltInt);
+  }
+  Serial.printf("voltInt: %d\n", voltInt);
+  
+    v += volt;
 
-  v += volt;
+    Vcc += v.substring(0, 1);
+    Vcc += ',';
+    Vcc += v.substring(1, 3);
+    Vcc += 'V';
 
-  Vcc += v.substring(0, 1);
-  Vcc += ',';
-  Vcc += v.substring(1, 3);
-  Vcc += 'V';
-
-  return Vcc;
+    return Vcc;
+    
 }
 
 /* received signal strength indicator in dBm */
@@ -63,7 +73,9 @@ void initPin() {
   digitalWrite(HOT_PIN, HIGH);
   pinMode(COLD_PIN, INPUT);
   digitalWrite(COLD_PIN, HIGH);
-  pinMode(EXT_POWER_PIN, INPUT_PULLDOWN_16);
+  if (EXT_POWER_CONTROL) {
+    pinMode(EXT_POWER_PIN, INPUT_PULLDOWN_16);
+  }
   
 }
 
