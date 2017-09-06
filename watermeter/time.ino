@@ -1,7 +1,11 @@
 String localUptime() {
   String s;
   unsigned long milli;
-  milli = millis();
+  if (firstNTP) {
+    milli = millis();
+  } else {
+    milli = (now() - timeStart)*1000;
+  }
 
   unsigned long secs = milli / 1000, mins = secs / 60;
   unsigned int hours = mins / 60, days = hours / 24;

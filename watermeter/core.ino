@@ -150,6 +150,6 @@ void wakeupFromMotion(void) {
   wifi_fpm_close();
 /*  wifi_set_opmode(STATION_MODE);
   wifi_station_connect();*/
-  if (DEBUG) Serial.println("Wake up from sleep.");
+  if (DEBUG) Serial.println("Wake up from sleep.");  
 }
 

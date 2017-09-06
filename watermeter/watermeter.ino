@@ -44,7 +44,7 @@ extern "C" {
 #define LITERS_PER_PULSE 10                      /* How many liters per one pulse     */
 #define TIME_ZONE 3                              /* Default Time Zone                 */
 
-/* for TimeLib (NTP and clock) */
+/* For TimeLib (NTP and clock) */
 #define SYNC_TIME 21600                          /* Interval sync to NTP Server       */
 #define NTP_SERVER_NAME "ntp4.stratum2.ru"       /* URL of NTP server                 */ 
 #define NTP_LOCAL_PORT 8888                      /* NTP local port                    */
@@ -110,9 +110,9 @@ bool mqttRestart = false;
 bool mqttFirstStart = true;
 bool subsHotWater = false;
 bool subsColdWater = false;
-//bool restartFromSleep = false;
+bool firstNTP = true;
 
-/* Delay before sleep if external power is off */
+/* Delay before sleep ~500msec if external power is off */
 #define SLEEP_DELAY 500
 int sleepDelay = 0;
 
@@ -147,6 +147,7 @@ _config wmConfig;
 time_t mqttReconnectTime = 0;
 time_t staReconnectTime = 0;
 time_t ntpReconnectTime = 0;
+time_t timeStart;
 
 /* If EXT_POWER_CONTROL is false and pin A0 should be not connected to anything */
 #if (!EXT_POWER_CONTROL)
@@ -156,14 +157,15 @@ ADC_MODE (ADC_VCC);
 
 void loop () {
   String s;
-  webServer.handleClient();
-
+  
   checkExtPower();
 
   if (offWiFi) {
     sleepNow();
   }
   
+  webServer.handleClient();
+
   /* Restart connecting to NTP server one time in 60 sec */
   if (!responseNTP && !apModeNow && ntpReconnectTime+60000 < millis() && WiFi.status() == WL_CONNECTED)  {
     ntpReconnectTime = millis();
@@ -272,6 +274,12 @@ void loop () {
       }
     }
   }
+
+   if (firstNTP && responseNTP) {
+      timeStart = now();
+      firstNTP = false;
+   }
+  
 
   /* reset soft watchdog */
   ESP.wdtFeed();
