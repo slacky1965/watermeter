@@ -1,10 +1,23 @@
+/* Get time_t without timezone */
+time_t timeTwTZ() {
+  time_t t = now();
+  return t;
+}
+
+/* Get time_t with timezone    */
+time_t localTimeT() {
+  time_t t = timeTwTZ();
+  t += wmConfig.timeZone * SECS_PER_HOUR;
+  return t;
+}
+
 String localUptime() {
   String s;
   unsigned long milli;
   if (firstNTP) {
     milli = millis();
   } else {
-    milli = (now() - timeStart)*1000;
+    milli = (timeTwTZ() - timeStart)*1000;
   }
 
   unsigned long secs = milli / 1000, mins = secs / 60;
@@ -27,12 +40,11 @@ String localUptime() {
 }
 
 
-String localTime()
-{
-  // digital clock display of the time
+String localTimeStr() {
+  time_t t = localTimeT();
   String curTime = "";
-  curTime += strDigits(hour()) + ":" + strDigits(minute()) + ":" + strDigits(second());
-  curTime += " " + strDigits(day()) + "." + strDigits(month()) + "." + strDigits(year());
+  curTime += strDigits(hour(t)) + ":" + strDigits(minute(t)) + ":" + strDigits(second(t));
+  curTime += " " + strDigits(day(t)) + "." + strDigits(month(t)) + "." + strDigits(year(t));
   return curTime;
 }
 
@@ -58,7 +70,7 @@ void startNTP() {
   setSyncInterval(SYNC_TIME);
 
   if (DEBUG) {
-    Serial.printf("Local time: %s\n", localTime().c_str());
+    Serial.printf("Local time: %s\n", localTimeStr().c_str());
   }
 }
 
@@ -94,7 +106,7 @@ time_t getNtpTime()
       secsSince1900 |= (unsigned long)packetBuffer[41] << 16;
       secsSince1900 |= (unsigned long)packetBuffer[42] << 8;
       secsSince1900 |= (unsigned long)packetBuffer[43];
-      return secsSince1900 - 2208988800UL + wmConfig.timeZone * SECS_PER_HOUR;
+      return secsSince1900 - 2208988800UL;
     }
   }
   if (DEBUG) Serial.println("No NTP Response :-(");

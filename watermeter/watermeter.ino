@@ -198,7 +198,7 @@ void loop () {
 
   /* If counter of hot water was added */
   if (counterHotWater > 0) {
-    wmConfig.hotTime = now();
+    wmConfig.hotTime = localTimeT();
     s = "";
     s += wmConfig.hotTime;
     wmConfig.hotWater += counterHotWater * wmConfig.litersPerPulse;
@@ -213,7 +213,7 @@ void loop () {
 
   /* If counter of cold water was added */
   if (counterColdWater > 0) {
-    wmConfig.coldTime = now();
+    wmConfig.coldTime = localTimeT();
     s = "";
     s += wmConfig.coldTime;
     wmConfig.coldWater += counterColdWater * wmConfig.litersPerPulse;
@@ -276,7 +276,7 @@ void loop () {
   }
 
    if (firstNTP && responseNTP) {
-      timeStart = now();
+      timeStart = timeTwTZ();
       firstNTP = false;
    }
   

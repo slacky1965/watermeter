@@ -315,7 +315,7 @@ String htmlLogo() {
   s += "</p>\r\n";
   s += "<p>" + returnVccStr() + ". " + returnRssiStr() + "</p>";
   s += "<p>Local time: ";
-  s += localTime();
+  s += localTimeStr();
   s += "</p>\r\n";
   s += "</div>\r\n";
   s += "</div>\r\n";
@@ -655,15 +655,15 @@ void parssingSettings() {
       s = webServer.arg(i);
       config.timeZone = s.toInt();
     } else if (s == "hotw") {
-      config.hotTime = now();
+      config.hotTime = localTimeT();
       s = webServer.arg(i);
       config.hotWater = strtoul(s.c_str(), 0, 10);
-      config.hotTime = now();
+      config.hotTime = localTimeT();
     } else if (s == "coldw") {
-      config.coldTime = now();
+      config.coldTime = localTimeT();
       s = webServer.arg(i);
       config.coldWater = strtoul(s.c_str(), 0, 10);
-      config.coldTime = now();
+      config.coldTime = localTimeT();
     } else if (s == "countw") {
       s = webServer.arg(i);
       config.litersPerPulse = s.toInt();

@@ -31,7 +31,7 @@ void initDefConfig(_config *config) {
   s.toCharArray(config->ntpServerName, s.length()+1);
   config->timeZone = TIME_ZONE;
   config->litersPerPulse = LITERS_PER_PULSE;
-  config->hotTime = config->coldTime = now();
+  config->hotTime = config->coldTime = localTimeT();
   config->hotWater = config->coldWater = 0;
 
   staConfigure = false;
