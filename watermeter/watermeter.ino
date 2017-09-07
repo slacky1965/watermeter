@@ -144,9 +144,9 @@ typedef struct config {
 
 _config wmConfig;
 
-unsigned long mqttReconnectTime = 0;
-unsigned long staReconnectTime = 0;
-unsigned long ntpReconnectTime = 0;
+unsigned long mqttReconnectDelay = 0;
+unsigned long staReconnectDelay = 0;
+unsigned long ntpReconnectDelay = 0;
 time_t timeStart;
 
 /* If EXT_POWER_CONTROL is false and pin A0 should be not connected to anything */
@@ -167,8 +167,8 @@ void loop () {
   webServer.handleClient();
 
   /* Restart connecting to NTP server one time in 60 sec */
-  if (!responseNTP && !apModeNow && ntpReconnectTime+60000 < millis() && WiFi.status() == WL_CONNECTED)  {
-    ntpReconnectTime = millis();
+  if (!responseNTP && !apModeNow && ntpReconnectDelay+60000 < millis() && WiFi.status() == WL_CONNECTED)  {
+    ntpReconnectDelay = millis();
     startNTP();
   }
 
@@ -231,13 +231,13 @@ void loop () {
   else mqttRestart = true;
 
   /* reconnect to mqqt broker one time in 10 sec. */
-  if (mqttRestart && mqttReconnectTime+10000 < millis()) {
+  if (mqttRestart && mqttReconnectDelay+10000 < millis()) {
     if (staModeNow && WiFi.status() == WL_CONNECTED) {
       mqttClient.disconnect();
       mqttReconnect();
       printMqttState();
     }
-    mqttReconnectTime = millis();
+    mqttReconnectDelay = millis();
   }
 
   if (!offWiFi && wmConfig.apMode && !apModeNow && !staModeNow) {
@@ -245,9 +245,9 @@ void loop () {
   }
 
   /* checking connect to WiFi network one time in 30 sec */
-  if (!offWiFi && !wmConfig.apMode && staConfigure && staReconnectTime+30000 < millis() && 
+  if (!offWiFi && !wmConfig.apMode && staConfigure && staReconnectDelay+30000 < millis() && 
          ((apModeNow || (staModeNow && WiFi.status() != WL_CONNECTED)) || (!apModeNow && !staModeNow))) {
-    staReconnectTime = millis();
+    staReconnectDelay = millis();
     if (DEBUG) Serial.printf("Check WiFi network: %s\n", wmConfig.staSsid);
     int n = WiFi.scanNetworks(); 
     if (n != 0) {
@@ -258,7 +258,7 @@ void loop () {
             staModeNow = true;
             wmConfig.apMode = false;
             responseNTP = false;
-            ntpReconnectTime = 0;
+            ntpReconnectDelay = 0;
           }
           break;
         }
