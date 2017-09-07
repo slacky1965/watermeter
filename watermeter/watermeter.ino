@@ -144,9 +144,9 @@ typedef struct config {
 
 _config wmConfig;
 
-time_t mqttReconnectTime = 0;
-time_t staReconnectTime = 0;
-time_t ntpReconnectTime = 0;
+unsigned long mqttReconnectTime = 0;
+unsigned long staReconnectTime = 0;
+unsigned long ntpReconnectTime = 0;
 time_t timeStart;
 
 /* If EXT_POWER_CONTROL is false and pin A0 should be not connected to anything */
