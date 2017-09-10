@@ -19,4 +19,4 @@ Chip MC14490 Hex Contact Bounce Eliminator - http://www.west-l.ru/uploads/tdpdf/
 
 Resistor 12kOm 0.125W for Battery shield (for external power control, see https://github.com/slacky1965/watermeter/blob/battery/doc/images/Wemos1.jpg)
 
-Lithium (LiPo) Battery 18650 2600mAh 3.7V
+Lithium (LiPo) Battery 18650 2600mAh 3.7V -  https://github.com/slacky1965/watermeter/blob/master/doc/images/battery.jpg
