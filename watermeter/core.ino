@@ -44,7 +44,7 @@ String returnVccStr() {
   } else {
     Vcc = "Battery: ";
     voltInt = analogRead(BAT_VOLT_PIN);
-    volt = 3300/1024*voltInt;
+    volt = 5000/1024*voltInt*1.19;
   }
 /*  Serial.printf("voltInt: %d\n", voltInt);*/
   

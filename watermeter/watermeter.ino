@@ -11,8 +11,9 @@ extern "C" {
 #include "user_interface.h"
 }
 
-#define DEBUG true
-#define EXT_POWER_CONTROL true
+#define DEBUG true                                /* Send debug messages if true       */
+#define EXT_POWER_CONTROL true                    /* Check external power if true      */
+#define SLEEP_MODE_ON true                        /* To pass into sleep mode if true   */
 
 #define SD_PIN D8                                 /* microSD use D8 for Wemos D1 Mini  */
 #define HOT_PIN D1                                /* Number of Pin for hot water       */
@@ -157,10 +158,10 @@ ADC_MODE (ADC_VCC);
 
 void loop () {
   String s;
-  
+
   checkExtPower();
 
-  if (offWiFi) {
+  if (offWiFi && SLEEP_MODE_ON) {
     sleepNow();
   }
   
