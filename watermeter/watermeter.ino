@@ -99,7 +99,7 @@ ESP8266WebServer webServer(80);
 /* Flags */
 bool rebootNow = false;
 bool restartWiFi = false;
-bool offWiFi = false;
+bool sleepNow = false;
 bool apModeNow = true;
 bool staModeNow = false;
 bool staConfigure = false;
@@ -161,8 +161,8 @@ void loop () {
 
   checkExtPower();
 
-  if (offWiFi && SLEEP_MODE_ON) {
-    sleepNow();
+  if (sleepNow && SLEEP_MODE_ON) {
+    sleepOnNow();
   }
   
   webServer.handleClient();
@@ -241,12 +241,12 @@ void loop () {
     mqttReconnectDelay = millis();
   }
 
-  if (!offWiFi && wmConfig.apMode && !apModeNow && !staModeNow) {
+  if (!sleepNow && wmConfig.apMode && !apModeNow && !staModeNow) {
     startWiFiAP();
   }
 
   /* checking connect to WiFi network one time in 30 sec */
-  if (!offWiFi && !wmConfig.apMode && staConfigure && staReconnectDelay+30000 < millis() && 
+  if (!sleepNow && !wmConfig.apMode && staConfigure && staReconnectDelay+30000 < millis() && 
          ((apModeNow || (staModeNow && WiFi.status() != WL_CONNECTED)) || (!apModeNow && !staModeNow))) {
     staReconnectDelay = millis();
     if (DEBUG) Serial.printf("Check WiFi network: %s\n", wmConfig.staSsid);

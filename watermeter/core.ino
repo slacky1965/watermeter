@@ -107,18 +107,18 @@ bool checkExtPower() {
 
   if (val) {
     sleepDelay = 0;
-    if (offWiFi) {
+    if (sleepNow) {
       if (DEBUG) Serial.println("External power high.");  
-      offWiFi = false;
+      sleepNow = false;
     }
     return true;
   }
   else {
     delay(1);
-    if (!offWiFi) {
+    if (!sleepNow) {
       if (sleepDelay > SLEEP_DELAY) {
         if (DEBUG) Serial.println("External power low.");
-        offWiFi = true;
+        sleepNow = true;
         sleepDelay = 0;
         return false;
       } else {
@@ -129,7 +129,7 @@ bool checkExtPower() {
   }
 }
 
-void sleepNow() {
+void sleepOnNow() {
   if (DEBUG) Serial.println("Light sleep now ...");
   apModeNow=staModeNow=false;
   wifi_station_disconnect();

@@ -22,22 +22,23 @@ void setup() {
     }
   }
 
-  if (!checkExtPower()) {
-    while (sleepDelay <= SLEEP_DELAY) {
+  if (SLEEP_MODE_ON) {
+    if (!checkExtPower()) {
+      while (sleepDelay <= SLEEP_DELAY) {
+        checkExtPower();
+      }
       checkExtPower();
     }
-    checkExtPower();
   }
 
-
   if (firstStart || wmConfig.apMode || wmConfig.staSsid[0] == '0') {
-    if (!offWiFi) {
+    if (!sleepNow) {
       startWiFiAP();              /* wifi.ino   */
       delay(1000);
       startApMsg();               /* core.ino   */
     }
   } else {
-    if (!offWiFi) {
+    if (!sleepNow) {
       if (!startWiFiSTA()) {      /* wifi.ino   */
         Serial.println("No WiFi connect STA mode. Start AP mode");
         delay(500);
