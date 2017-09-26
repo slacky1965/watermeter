@@ -12,6 +12,7 @@ void initDefConfig(_config *config) {
   s = WEB_ADMIN_PASSWORD + '\0';
   s.toCharArray(config->webAdminPassword, s.length()+1);
   config->fullSecurity = false;
+  config->configSecurity = false;
   config->staSsid[0] = 0;
   config->staPassword[0] = 0;
   config->apMode = true;
@@ -50,6 +51,7 @@ void setConfig(_config *config) {
   s = config->webAdminPassword + '\0';
   s.toCharArray(wmConfig.webAdminPassword, s.length()+1);
   wmConfig.fullSecurity = config->fullSecurity;
+  wmConfig.configSecurity = config->configSecurity;
   s = config->staSsid + '\0';
   s.toCharArray(wmConfig.staSsid, s.length()+1);
   s = config->staPassword + '\0';

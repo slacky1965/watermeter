@@ -58,7 +58,7 @@ void initWebServer (void) {
   webServer.onNotFound(handleNotFound);
   
   webServer.on("/upload", HTTP_GET, [](){
-    if (wmConfig.fullSecurity) {
+    if (wmConfig.fullSecurity || wmConfig.configSecurity) {
       if (!webServer.authenticate(wmConfig.webAdminLogin, wmConfig.webAdminPassword))
         return webServer.requestAuthentication();
     }
@@ -393,7 +393,7 @@ void handleConfig() {
 
   String s;
 
-  if (wmConfig.fullSecurity) {
+  if (wmConfig.fullSecurity || wmConfig.configSecurity) {
     if (!webServer.authenticate(wmConfig.webAdminLogin, wmConfig.webAdminPassword))
     return webServer.requestAuthentication();
   }
@@ -432,6 +432,10 @@ void handleConfig() {
   if (wmConfig.fullSecurity) s += "checked>\r\n";
   else s += ">\r\n";
   s += "<label for=\"fullsecurity\">Full Security</label>\r\n";
+  s += "<input type=\"checkbox\" name=\"configsecurity\" id=\"configsecurity\" value=\"true\"";
+  if (wmConfig.configSecurity) s += "checked>\r\n";
+  else s += ">\r\n";
+  s += "<label for=\"configsecurity\">Config Security</label>\r\n";
   s += "</p>\r\n";
   s += "</td>\r\n";
   s += "</tr>\r\n";
@@ -602,6 +606,9 @@ void parssingSettings() {
     } else if (s == "fullsecurity") {
       s = webServer.arg(i);
       if (s == "true") config.fullSecurity = true;
+    } else if (s == "configsecurity") {
+      s = webServer.arg(i);
+      if (s == "true") config.configSecurity = true;
     } else if (s == "wifi-mode") {
       s = webServer.arg(i);
       if (s == "station") config.apMode = false;
@@ -681,7 +688,7 @@ void parssingSettings() {
   if (defaultConfig) {
     defaultConfig = false;
     if (sdOk) rmDirR(watermeterDirName);
-    else clearEeprom();
+    clearEeprom();
     if (rebootNow) {
       Serial.println("Rebooting ...");
       delay(2000);
@@ -708,7 +715,7 @@ void parssingSettings() {
   if (saveNewConfig) {
 
     if (strcmp(wmConfig.webAdminLogin, config.webAdminLogin) != 0 || strcmp(wmConfig.webAdminPassword, config.webAdminPassword) != 0 ||
-               wmConfig.fullSecurity != config.fullSecurity) newSave = true;
+               wmConfig.fullSecurity != config.fullSecurity || wmConfig.configSecurity != config.configSecurity) newSave = true;
 
     if (apModeNow) {
       if (!config.apMode || strcmp(wmConfig.apSsid, config.apSsid) != 0 || strcmp(wmConfig.apPassword, config.apPassword) != 0)  {

@@ -14,6 +14,7 @@ bool initSD() {
 
 
 bool readConfig() {
+//  return false;
   if (sdOk) {
     if (DEBUG) Serial.printf("Read from SD. File name: %s\n", configFileName.c_str());
     /* read from SD */
@@ -31,6 +32,7 @@ bool readConfig() {
     }
   } else {
     /* read from EEPROM */
+    if (NOT_READ_EPPROM) return false;
     if (readEeprom()) {
       if (DEBUG) Serial.println("Read from EEPROM true");
       if (wmConfig.staSsid[0] != 0) staConfigure = true;

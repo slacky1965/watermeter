@@ -14,6 +14,7 @@ extern "C" {
 #define DEBUG true                                /* Send debug messages if true       */
 #define EXT_POWER_CONTROL true                    /* Check external power if true      */
 #define SLEEP_MODE_ON true                        /* To pass into sleep mode if true   */
+#define NOT_READ_EPPROM false                     /* Dont't read from EPPROM if true   */
 
 #define SD_PIN D8                                 /* microSD use D8 for Wemos D1 Mini  */
 #define HOT_PIN D1                                /* Number of Pin for hot water       */
@@ -124,7 +125,8 @@ volatile unsigned long counterHotWater, counterColdWater;
 typedef struct config {
   char webAdminLogin[16];      /* Login for web Auth                    */
   char webAdminPassword[16];   /* Password for web Auth                 */
-  bool fullSecurity;           /* true - web Auth, false - free         */
+  bool fullSecurity;           /* true - all web Auth, false - free     */
+  bool configSecurity;         /* true - config and update Auth         */
   char staSsid[16];            /* STA SSID WiFi                         */
   char staPassword[16];        /* STA Password WiFi                     */
   bool apMode;                 /* true - AP Mode, false - STA Mode      */
