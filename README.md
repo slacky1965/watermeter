@@ -15,8 +15,7 @@ Lithium (LiPo) Battery shield, charging & boost for Wemos D1 mini - https://wiki
 
 A triple(x3) Base for Wemos D1 mini - https://wiki.wemos.cc/products:d1_mini_shields:tripler_base
 
-/*Chip MC14490 Hex Contact Bounce Eliminator - http://www.west-l.ru/uploads/tdpdf/oh646060.pdf*/
-Added software debounce
+Added software debounce /*Chip MC14490 Hex Contact Bounce Eliminator - http://www.west-l.ru/uploads/tdpdf/oh646060.pdf*/
 
 Resistor 12kOm 0.125W for Battery shield (for external power control, see https://github.com/slacky1965/watermeter/blob/master/doc/images/Wemos1.jpg)
 
