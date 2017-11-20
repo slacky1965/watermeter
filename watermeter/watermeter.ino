@@ -22,6 +22,8 @@ extern "C" {
 #define EXT_POWER_PIN D0                          /* Check external input Vcc          */
 #define BAT_VOLT_PIN A0                           /* Measuring the battery voltage     */
 
+#define TIME_BOUNCE 50                            /* Pause for debounce                 */
+
 /* Name and Version */
 #define PLATFORM "Wemos D1 mini & Micro SD"
 #define MODULE_VERSION "v2.0"
@@ -101,6 +103,7 @@ ESP8266WebServer webServer(80);
 bool rebootNow = false;
 bool restartWiFi = false;
 bool sleepNow = false;
+bool powerLow = false;
 bool apModeNow = true;
 bool staModeNow = false;
 bool staConfigure = false;
@@ -120,6 +123,10 @@ int sleepDelay = 0;
 
 /* Counter of water for interrupts */
 volatile unsigned long counterHotWater, counterColdWater;
+
+/* Timer for debounce */
+os_timer_t hotTimer;
+os_timer_t coldTimer;
 
 /* struct of config file */
 typedef struct config {
@@ -150,7 +157,11 @@ _config wmConfig;
 unsigned long mqttReconnectDelay = 0;
 unsigned long staReconnectDelay = 0;
 unsigned long ntpReconnectDelay = 0;
+volatile unsigned long hotTimeBounce, coldTimeBounce;
 time_t timeStart;
+
+volatile int hotInt, coldInt;
+
 
 /* If EXT_POWER_CONTROL is false and pin A0 should be not connected to anything */
 #if (!EXT_POWER_CONTROL)
@@ -164,9 +175,39 @@ void loop () {
   checkExtPower();
 
   if (sleepNow && SLEEP_MODE_ON) {
-    sleepOnNow();
+   sleepOnNow();
   }
   
+  /* If counter of hot water was added */
+  if (counterHotWater > 0) {
+    wmConfig.hotTime = localTimeT();
+    s = "";
+    s += wmConfig.hotTime;
+    wmConfig.hotWater += counterHotWater * wmConfig.litersPerPulse;
+    s = s + " " + wmConfig.hotWater;
+    if (DEBUG) {
+      Serial.print(mqttTopicHotOut + " <== "); Serial.println(s);
+    }
+    if (mqttClient.connected()) mqttClient.publish(mqttTopicHotOut.c_str(),s.c_str());
+    else saveConfig();
+    counterHotWater = 0;
+  }
+
+  /* If counter of cold water was added */
+  if (counterColdWater > 0) {
+    wmConfig.coldTime = localTimeT();
+    s = "";
+    s += wmConfig.coldTime;
+    wmConfig.coldWater += counterColdWater * wmConfig.litersPerPulse;
+    s = s + " " + wmConfig.coldWater;
+    if (DEBUG) {
+      Serial.print(mqttTopicColdOut + " <== "); Serial.println(s);
+    }
+    if (mqttClient.connected()) mqttClient.publish(mqttTopicColdOut.c_str(),s.c_str());
+    else saveConfig();
+    counterColdWater = 0;
+  }
+
   webServer.handleClient();
 
   /* Restart connecting to NTP server one time in 60 sec */
@@ -198,37 +239,6 @@ void loop () {
 
     if (mqttClient.connected()) mqttClient.publish(mqttTopicColdOut.c_str(),s.c_str());
   }
-
-  /* If counter of hot water was added */
-  if (counterHotWater > 0) {
-    wmConfig.hotTime = localTimeT();
-    s = "";
-    s += wmConfig.hotTime;
-    wmConfig.hotWater += counterHotWater * wmConfig.litersPerPulse;
-    s = s + " " + wmConfig.hotWater;
-    if (DEBUG) {
-      Serial.print(mqttTopicHotOut + " <== "); Serial.println(s);
-    }
-    if (mqttClient.connected()) mqttClient.publish(mqttTopicHotOut.c_str(),s.c_str());
-    else saveConfig();
-    counterHotWater = 0;
-  }
-
-  /* If counter of cold water was added */
-  if (counterColdWater > 0) {
-    wmConfig.coldTime = localTimeT();
-    s = "";
-    s += wmConfig.coldTime;
-    wmConfig.coldWater += counterColdWater * wmConfig.litersPerPulse;
-    s = s + " " + wmConfig.coldWater;
-    if (DEBUG) {
-      Serial.print(mqttTopicColdOut + " <== "); Serial.println(s);
-    }
-    if (mqttClient.connected()) mqttClient.publish(mqttTopicColdOut.c_str(),s.c_str());
-    else saveConfig();
-    counterColdWater = 0;
-  }
-
   
   if (mqttClient.connected()) mqttClient.loop();
   else mqttRestart = true;
@@ -243,12 +253,12 @@ void loop () {
     mqttReconnectDelay = millis();
   }
 
-  if (!sleepNow && wmConfig.apMode && !apModeNow && !staModeNow) {
+  if (!sleepNow && !powerLow && wmConfig.apMode && !apModeNow && !staModeNow) {
     startWiFiAP();
   }
 
   /* checking connect to WiFi network one time in 30 sec */
-  if (!sleepNow && !wmConfig.apMode && staConfigure && staReconnectDelay+30000 < millis() && 
+  if (!sleepNow && !powerLow && !wmConfig.apMode && staConfigure && staReconnectDelay+30000 < millis() && 
          ((apModeNow || (staModeNow && WiFi.status() != WL_CONNECTED)) || (!apModeNow && !staModeNow))) {
     staReconnectDelay = millis();
     if (DEBUG) Serial.printf("Check WiFi network: %s\n", wmConfig.staSsid);
@@ -286,6 +296,8 @@ void loop () {
 
   /* reset soft watchdog */
   ESP.wdtFeed();
+
+  yield();
 }
 
 

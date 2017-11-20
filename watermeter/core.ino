@@ -69,8 +69,8 @@ String returnRssiStr() {
 
 /* Init PIN */
 void initPin() {
-  pinMode(HOT_PIN, INPUT);
-  pinMode(COLD_PIN, INPUT);
+  pinMode(HOT_PIN, INPUT_PULLUP);
+  pinMode(COLD_PIN, INPUT_PULLUP);
   if (EXT_POWER_CONTROL) {
     pinMode(EXT_POWER_PIN, INPUT_PULLDOWN_16);
   }
@@ -87,16 +87,61 @@ void initInterrupt() {
   
   attachInterrupt(digitalPinToInterrupt(HOT_PIN), hotInterrupt, RISING);
   attachInterrupt(digitalPinToInterrupt(COLD_PIN), coldInterrupt, RISING);
+
+  hotInt = coldInt = 0;
 }
 
 /* External interrupt for hot water  */
 void hotInterrupt() {
-  counterHotWater++;
+  /* First interrupt if hotInt == 0 */
+  if (hotInt == 0) {    
+    hotInt++;
+    hotTimeBounce = millis();
+  }
+  os_timer_arm(&hotTimer, TIME_BOUNCE, true);
 }
 
 /* External interrupt for cold water */
 void coldInterrupt() {
-  counterColdWater++;
+  /* First interrupt if coldInt == 0 */
+  if (coldInt == 0) {
+    coldInt++;
+    coldTimeBounce = millis();
+  }
+  os_timer_arm(&coldTimer, TIME_BOUNCE, true);
+}
+
+void hotTimerCallback(void *pArg) {
+
+  /* If a long low level, then retiming hotTimeBounce */
+  if (!digitalRead(HOT_PIN)) {
+    hotTimeBounce = millis();
+    return;
+  }
+
+  if (digitalRead(HOT_PIN) && hotTimeBounce + TIME_BOUNCE > millis()) return;
+  
+  os_timer_disarm (&hotTimer);
+
+  hotInt = 0;
+
+  counterHotWater++;  
+}
+
+void coldTimerCallback(void *pArg) {
+
+  if (!digitalRead(COLD_PIN)) {
+    coldTimeBounce = millis();
+    return;
+  }
+
+  if (digitalRead(COLD_PIN) && coldTimeBounce + TIME_BOUNCE > millis()) return;
+  
+  os_timer_disarm (&coldTimer);
+
+  coldInt = 0;
+
+  counterColdWater++;  
 }
 
 bool checkExtPower() {
@@ -106,6 +151,7 @@ bool checkExtPower() {
   int val = digitalRead(EXT_POWER_PIN);
 
   if (val) {
+    powerLow = false;
     sleepDelay = 0;
     if (sleepNow) {
       if (DEBUG) Serial.println("External power high.");  
@@ -114,6 +160,7 @@ bool checkExtPower() {
     return true;
   }
   else {
+    powerLow = true;
     delay(1);
     if (!sleepNow) {
       if (sleepDelay > SLEEP_DELAY) {
@@ -148,8 +195,7 @@ void wakeupFromMotion(void) {
   ESP.wdtFeed();
   initInterrupt();
   wifi_fpm_close();
-/*  wifi_set_opmode(STATION_MODE);
-  wifi_station_connect();*/
-  if (DEBUG) Serial.println("Wake up from sleep.");  
+  if (DEBUG) Serial.println("Wake up from sleep.");
+  sleepNow = false; 
 }
 

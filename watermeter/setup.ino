@@ -11,6 +11,9 @@ void setup() {
 
   initInterrupt();              /* core.ino   */
 
+  os_timer_setfn(&hotTimer, hotTimerCallback, NULL);  /* core.ino */
+  os_timer_setfn(&coldTimer, coldTimerCallback, NULL); /* core.ino */
+
   initSD();                     /* sd.ino     */
 
   initDefConfig(&wmConfig);         /* config.ino */
