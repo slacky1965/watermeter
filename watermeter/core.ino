@@ -9,6 +9,7 @@ String makeMacAddress() {
   return mac;
 }
 
+/* For read and write to EEPROM */
 unsigned long crc_update(unsigned long crc, byte data) {
   byte tbl_idx;
   tbl_idx = crc ^ (data >> (0 * 4));
@@ -93,7 +94,7 @@ void initInterrupt() {
 
 /* External interrupt for hot water  */
 void hotInterrupt() {
-  /* First interrupt if hotInt == 0 */
+  /* First interrupt if hotInt == 0  */
   if (hotInt == 0) {    
     hotInt++;
     hotTimeBounce = millis();

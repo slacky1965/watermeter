@@ -33,8 +33,8 @@ extern "C" {
 
 /* Directory and name of config files for SD card */
 #define DELIM "/"
-#define WM_DIR DELIM "wmeter"                    /* Drirectory for config file        */
-#define WM_CONFIG_FILE WM_DIR DELIM "wmeter.dat" /* Full path and name of config file */
+#define WM_DIR DELIM "wmeter"                    /* Drirectory for config file        - "/wmeter"             */
+#define WM_CONFIG_FILE WM_DIR DELIM "wmeter.dat" /* Full path and name of config file - "/wmeter/wmeter.dat"  */
 
 /* For config (default settings) */
 #define WEB_ADMIN_LOGIN "Admin"                  /* Login for web Auth                */
@@ -49,9 +49,9 @@ extern "C" {
 #define TIME_ZONE 3                              /* Default Time Zone                 */
 
 /* For TimeLib (NTP and clock) */
-#define SYNC_TIME 21600                          /* Interval sync to NTP Server       */
-#define NTP_SERVER_NAME "ntp4.stratum2.ru"       /* URL of NTP server                 */ 
-#define NTP_LOCAL_PORT 8888                      /* NTP local port                    */
+#define SYNC_TIME 21600                          /* Interval sync to NTP Server in sec           */
+#define NTP_SERVER_NAME "ntp4.stratum2.ru"       /* URL of NTP server                            */ 
+#define NTP_LOCAL_PORT 8888                      /* NTP local port                               */
 unsigned int localPort = NTP_LOCAL_PORT;
 const int NTP_PACKET_SIZE = 48;                  /* NTP time is in the first 48 bytes of message */
 byte packetBuffer[NTP_PACKET_SIZE];              /* buffer to hold incoming & outgoing packets   */
@@ -84,14 +84,14 @@ WiFiClient wifiClient;
 #define END_TOPIC_HOT_OUT "HotWater" DELIM "Out"
 #define END_TOPIC_COLD_OUT "ColdWater" DELIM "Out"
 PubSubClient mqttClient(wifiClient);
-String mqttClientId;                      /* MODULE_NAME-MacAddress                   */
+String mqttClientId;                      /* "MODULE_NAME-MacAddress"                                    */
 String mqttTopicHotOut, mqttTopicColdOut, mqttTopicHotIn, mqttTopicColdIn;
-                                          /* Full name Topic -                                          *
-                                           *  mqttTopicHotOut  - "MQTTTOPIC/MacAddress/HotWater/Out"    *
-                                           *  mqttTopicColdOut - "MQTTTOPIC/MacAddress/ColdWater/Out"   *
-                                           *  mqttTopicHotIn   - "MQTTTOPIC/MacAddress/HotWater/In"     *
-                                           *  mqttTopicColdIn  - "MQTTTOPIC/MacAddress/ColdWater/In"    *
-                                           *  see mqtt.ino                                              */
+                                          /* Full name Topic -                                           *
+                                           *  mqttTopicHotOut  - "MQTT_TOPIC/MacAddress/HotWater/Out"    *
+                                           *  mqttTopicColdOut - "MQTT_TOPIC/MacAddress/ColdWater/Out"   *
+                                           *  mqttTopicHotIn   - "MQTT_TOPIC/MacAddress/HotWater/In"     *
+                                           *  mqttTopicColdIn  - "MQTT_TOPIC/MacAddress/ColdWater/In"    *
+                                           *  see mqtt.ino                                               */
 
 
 /* For Web */
@@ -133,17 +133,17 @@ typedef struct config {
   char webAdminLogin[16];      /* Login for web Auth                    */
   char webAdminPassword[16];   /* Password for web Auth                 */
   bool fullSecurity;           /* true - all web Auth, false - free     */
-  bool configSecurity;         /* true - config and update Auth         */
+  bool configSecurity;         /* true - only config and update Auth    */
   char staSsid[16];            /* STA SSID WiFi                         */
   char staPassword[16];        /* STA Password WiFi                     */
   bool apMode;                 /* true - AP Mode, false - STA Mode      */
   char apSsid[16];             /* WiFi Name in AP mode                  */
   char apPassword[16];         /* WiFi Password in AP mode              */
-  char mqttBroker[32];         /* mqtt broker                           */
+  char mqttBroker[32];         /* URL or IP-address of mqtt-broker      */
   char mqttUser[16];           /* mqtt user                             */
   char mqttPassword[16];       /* mqtt password                         */
   char mqttTopic[64];          /* mqtt topic                            */
-  char ntpServerName[32];      /* URL NTP server                        */
+  char ntpServerName[32];      /* URL or IP-address of NTP server       */
   int timeZone;                /* Time Zone                             */
   byte litersPerPulse;         /* liters per pulse                      */
   time_t hotTime;              /* Last update time of hot water         */
@@ -154,9 +154,9 @@ typedef struct config {
 
 _config wmConfig;
 
-unsigned long mqttReconnectDelay = 0;
-unsigned long staReconnectDelay = 0;
-unsigned long ntpReconnectDelay = 0;
+unsigned long mqttReconnectLastTime = 0;
+unsigned long staReconnectLastTime = 0;
+unsigned long ntpReconnectLastTime = 0;
 volatile unsigned long hotTimeBounce, coldTimeBounce;
 time_t timeStart;
 
@@ -210,9 +210,9 @@ void loop () {
 
   webServer.handleClient();
 
-  /* Restart connecting to NTP server one time in 60 sec */
-  if (!responseNTP && !apModeNow && ntpReconnectDelay+60000 < millis() && WiFi.status() == WL_CONNECTED)  {
-    ntpReconnectDelay = millis();
+  /* Restart connecting to NTP server once in 60 sec */
+  if (!responseNTP && !apModeNow && ntpReconnectLastTime+60000 < millis() && WiFi.status() == WL_CONNECTED)  {
+    ntpReconnectLastTime = millis();
     startNTP();
   }
 
@@ -243,24 +243,24 @@ void loop () {
   if (mqttClient.connected()) mqttClient.loop();
   else mqttRestart = true;
 
-  /* reconnect to mqqt broker one time in 10 sec. */
-  if (mqttRestart && mqttReconnectDelay+10000 < millis()) {
+  /* reconnect to mqqt broker once in 10 sec. */
+  if (mqttRestart && mqttReconnectLastTime+10000 < millis()) {
     if (staModeNow && WiFi.status() == WL_CONNECTED) {
       mqttClient.disconnect();
       mqttReconnect();
       printMqttState();
     }
-    mqttReconnectDelay = millis();
+    mqttReconnectLastTime = millis();
   }
 
   if (!sleepNow && !powerLow && wmConfig.apMode && !apModeNow && !staModeNow) {
     startWiFiAP();
   }
 
-  /* checking connect to WiFi network one time in 30 sec */
-  if (!sleepNow && !powerLow && !wmConfig.apMode && staConfigure && staReconnectDelay+30000 < millis() && 
+  /* checking connect to WiFi network once in 30 sec */
+  if (!sleepNow && !powerLow && !wmConfig.apMode && staConfigure && staReconnectLastTime+30000 < millis() && 
          ((apModeNow || (staModeNow && WiFi.status() != WL_CONNECTED)) || (!apModeNow && !staModeNow))) {
-    staReconnectDelay = millis();
+    staReconnectLastTime = millis();
     if (DEBUG) Serial.printf("Check WiFi network: %s\n", wmConfig.staSsid);
     int n = WiFi.scanNetworks(); 
     if (n != 0) {
@@ -271,7 +271,7 @@ void loop () {
             staModeNow = true;
             wmConfig.apMode = false;
             responseNTP = false;
-            ntpReconnectDelay = 0;
+            ntpReconnectLastTime = 0;
           }
           break;
         }

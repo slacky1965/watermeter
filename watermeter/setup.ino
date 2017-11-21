@@ -11,14 +11,15 @@ void setup() {
 
   initInterrupt();              /* core.ino   */
 
-  os_timer_setfn(&hotTimer, hotTimerCallback, NULL);  /* core.ino */
-  os_timer_setfn(&coldTimer, coldTimerCallback, NULL); /* core.ino */
+  /* Set timers callback func. See core.ino   */
+  os_timer_setfn(&hotTimer, hotTimerCallback, NULL);
+  os_timer_setfn(&coldTimer, coldTimerCallback, NULL);
 
   initSD();                     /* sd.ino     */
 
-  initDefConfig(&wmConfig);         /* config.ino */
+  initDefConfig(&wmConfig);     /* config.ino */
 
-  if (!readConfig()) {            /* sd.ino     */
+  if (!readConfig()) {          /* sd.ino     */
     firstStart = true;
     if (sdOk) {
       mkDir(watermeterDirName); /* sd.ino     */
@@ -36,19 +37,16 @@ void setup() {
 
   if (firstStart || wmConfig.apMode || wmConfig.staSsid[0] == '0') {
     if (!sleepNow) {
-      startWiFiAP();              /* wifi.ino   */
+      startWiFiAP();            /* wifi.ino   */
       delay(1000);
-      startApMsg();               /* core.ino   */
+      startApMsg();             /* core.ino   */
     }
   } else {
     if (!sleepNow) {
-      if (!startWiFiSTA()) {      /* wifi.ino   */
+      if (!startWiFiSTA()) {    /* wifi.ino   */
         Serial.println("No WiFi connect STA mode. Start AP mode");
         delay(500);
-        startWiFiAP();            /* wifi.ino   */
-/*      wmConfig.apMode = true;
-        saveData();
-        ESP.reset();*/
+        startWiFiAP();          /* wifi.ino   */
       }
     }
   }
@@ -56,11 +54,11 @@ void setup() {
   mqttFirstStart = true;
 
   if (staModeNow && WiFi.status() == WL_CONNECTED) { 
-    startNTP();               /* time.ino     */
-    mqttReconnect();          /* mqtt.ino     */
+    startNTP();                 /* time.ino   */
+    mqttReconnect();            /* mqtt.ino   */
   }
 
-  initWebServer();            /* web.ino      */
+  initWebServer();              /* web.ino    */
 
 
 }

@@ -51,12 +51,14 @@ void initWebServer (void) {
   webServerIndex += bodyEnd();
   webServerIndex += htmlEnd();
 
-
+  /* Set "/" URL and handleRoot func         */
   webServer.on("/", handleRoot);
+  /* Set "/config" URL and handleConfig func */
   webServer.on("/config", handleConfig);
-/*  webServer.on("/time", handleTime);*/
+  /* Set handleNotFound func                 */
   webServer.onNotFound(handleNotFound);
-  
+
+  /* Set "/upload" URL */
   webServer.on("/upload", HTTP_GET, [](){
     if (wmConfig.fullSecurity || wmConfig.configSecurity) {
       if (!webServer.authenticate(wmConfig.webAdminLogin, wmConfig.webAdminPassword))
@@ -66,7 +68,8 @@ void initWebServer (void) {
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     webServer.send(200, "text/html", webServerIndex);
   });
-  
+
+  /* Set "/update" URL */
   webServer.on("/update", HTTP_POST, [](){
     webServer.sendHeader("Connection", "close");
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
@@ -385,9 +388,6 @@ void handleRoot() {
 
 }
 
-void handleTime() {
-  String s;
-}
 
 void handleConfig() {
 
@@ -769,9 +769,6 @@ void parssingSettings() {
           Serial.println("No WiFi connect STA mode. Start AP mode");
           delay(500);
           startWiFiAP();
-/*          wmConfig.apMode = true;
-          saveData();
-          ESP.reset();*/
         } else mqttReconnect();
 
       }
