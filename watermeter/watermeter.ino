@@ -124,7 +124,7 @@ int sleepDelay = 0;
 /* Counter of water for interrupts */
 volatile unsigned long counterHotWater, counterColdWater;
 
-/* Timer for debounce */
+/* Timers for debounce */
 os_timer_t hotTimer;
 os_timer_t coldTimer;
 
