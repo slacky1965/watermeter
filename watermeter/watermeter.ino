@@ -22,7 +22,7 @@ extern "C" {
 #define EXT_POWER_PIN D0                          /* Check external input Vcc          */
 #define BAT_VOLT_PIN A0                           /* Measuring the battery voltage     */
 
-#define TIME_BOUNCE 50                            /* Pause for debounce in msec        */
+#define TIME_BOUNCE 50                            /* Timeout for debounce in msec      */
 
 /* Name and Version */
 #define PLATFORM "Wemos D1 mini & Micro SD"
