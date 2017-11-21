@@ -32,7 +32,7 @@ bool readConfig() {
     }
   } else {
     /* read from EEPROM */
-    if (NOT_READ_EPPROM) return false;
+    if (NOT_READ_EEPROM) return false;
     if (readEeprom()) {
       if (DEBUG) Serial.println("Read from EEPROM true");
       if (wmConfig.staSsid[0] != 0) staConfigure = true;
