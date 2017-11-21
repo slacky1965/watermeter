@@ -11,18 +11,18 @@ extern "C" {
 #include "user_interface.h"
 }
 
-#define DEBUG true                                /* Send debug messages if true       */
-#define EXT_POWER_CONTROL true                    /* Check external power if true      */
-#define SLEEP_MODE_ON true                        /* To pass into sleep mode if true   */
-#define NOT_READ_EEPROM false                     /* Dont't read from EEPROM if true   */
+#define DEBUG true                                /* Send debug messages if true          */
+#define EXT_POWER_CONTROL true                    /* Check external power if true         */
+#define SLEEP_MODE_ON true                        /* To pass into sleep mode if true      */
+#define NOT_READ_EEPROM false                     /* Dont't read from EEPROM if true      */
 
-#define SD_PIN D8                                 /* microSD use D8 for Wemos D1 Mini  */
-#define HOT_PIN D1                                /* Number of Pin for hot water       */
-#define COLD_PIN D2                               /* Number of Pin for cold water      */
-#define EXT_POWER_PIN D0                          /* Check external input Vcc          */
-#define BAT_VOLT_PIN A0                           /* Measuring the battery voltage     */
+#define SD_PIN D8                                 /* microSD use D8 for Wemos D1 Mini     */
+#define HOT_PIN D1                                /* Pin of hot water                     */
+#define COLD_PIN D2                               /* Pin of cold water                    */
+#define EXT_POWER_PIN D0                          /* Pin of monitoring external power     */
+#define BAT_VOLT_PIN A0                           /* Pin of measuring the battery voltage */
 
-#define TIME_BOUNCE 50                            /* Timeout for debounce in msec      */
+#define TIME_BOUNCE 50                            /* Timeout for debounce in msec         */
 
 /* Name and Version */
 #define PLATFORM "Wemos D1 mini & Micro SD"
