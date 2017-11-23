@@ -98,7 +98,7 @@ void hotInterrupt() {
   if (hotInt == 0) {    
     hotInt++;
     hotTimeBounce = millis();
-  }
+  } else os_timer_disarm(&hotTimer);
   os_timer_arm(&hotTimer, TIME_BOUNCE, true);
 }
 
@@ -108,12 +108,11 @@ void coldInterrupt() {
   if (coldInt == 0) {
     coldInt++;
     coldTimeBounce = millis();
-  }
+  } else os_timer_disarm(&coldTimer);
   os_timer_arm(&coldTimer, TIME_BOUNCE, true);
 }
 
 void hotTimerCallback(void *pArg) {
-
   /* If a long low level, then retiming hotTimeBounce */
   if (!digitalRead(HOT_PIN)) {
     hotTimeBounce = millis();
@@ -122,7 +121,7 @@ void hotTimerCallback(void *pArg) {
 
   if (digitalRead(HOT_PIN) && hotTimeBounce + TIME_BOUNCE > millis()) return;
   
-  os_timer_disarm (&hotTimer);
+  os_timer_disarm(&hotTimer);
 
   hotInt = 0;
 
@@ -130,7 +129,7 @@ void hotTimerCallback(void *pArg) {
 }
 
 void coldTimerCallback(void *pArg) {
-
+  
   if (!digitalRead(COLD_PIN)) {
     coldTimeBounce = millis();
     return;
@@ -138,7 +137,7 @@ void coldTimerCallback(void *pArg) {
 
   if (digitalRead(COLD_PIN) && coldTimeBounce + TIME_BOUNCE > millis()) return;
   
-  os_timer_disarm (&coldTimer);
+  os_timer_disarm(&coldTimer);
 
   coldInt = 0;
 
