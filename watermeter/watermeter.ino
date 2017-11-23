@@ -26,7 +26,7 @@ extern "C" {
 
 /* Name and Version */
 #define PLATFORM "Wemos D1 mini & Micro SD"
-#define MODULE_VERSION "v2.0"
+#define MODULE_VERSION "v2.1"
 #define MODULE_NAME "WaterMeter " MODULE_VERSION
 #define WEB_WATERMETER_FIRST_NAME "Water"
 #define WEB_WATERMETER_LAST_NAME "Meter"
