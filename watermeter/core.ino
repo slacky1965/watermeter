@@ -119,7 +119,7 @@ void hotTimerCallback(void *pArg) {
     return;
   }
 
-  if (digitalRead(HOT_PIN) && hotTimeBounce + TIME_BOUNCE > millis()) return;
+  if (digitalRead(HOT_PIN) && millis() - hotTimeBounce < TIME_BOUNCE) return;
   
   os_timer_disarm(&hotTimer);
 
@@ -135,7 +135,7 @@ void coldTimerCallback(void *pArg) {
     return;
   }
 
-  if (digitalRead(COLD_PIN) && coldTimeBounce + TIME_BOUNCE > millis()) return;
+  if (digitalRead(COLD_PIN) && millis() - coldTimeBounce < TIME_BOUNCE) return;
   
   os_timer_disarm(&coldTimer);
 

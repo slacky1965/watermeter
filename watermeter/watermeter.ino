@@ -211,7 +211,7 @@ void loop () {
   webServer.handleClient();
 
   /* Restart connecting to NTP server once in 60 sec */
-  if (!responseNTP && !apModeNow && ntpReconnectLastTime+60000 < millis() && WiFi.status() == WL_CONNECTED)  {
+  if (!responseNTP && !apModeNow && millis() - ntpReconnectLastTime > 60000 && WiFi.status() == WL_CONNECTED)  {
     ntpReconnectLastTime = millis();
     startNTP();
   }
@@ -244,7 +244,7 @@ void loop () {
   else mqttRestart = true;
 
   /* reconnect to mqqt broker once in 10 sec. */
-  if (mqttRestart && mqttReconnectLastTime+10000 < millis()) {
+  if (mqttRestart && millis() - mqttReconnectLastTime > 10000) {
     if (staModeNow && WiFi.status() == WL_CONNECTED) {
       mqttClient.disconnect();
       mqttReconnect();
@@ -258,7 +258,7 @@ void loop () {
   }
 
   /* checking connect to WiFi network once in 30 sec */
-  if (!sleepNow && !powerLow && !wmConfig.apMode && staConfigure && staReconnectLastTime+30000 < millis() && 
+  if (!sleepNow && !powerLow && !wmConfig.apMode && staConfigure && millis() - staReconnectLastTime > 30000 && 
          ((apModeNow || (staModeNow && WiFi.status() != WL_CONNECTED)) || (!apModeNow && !staModeNow))) {
     staReconnectLastTime = millis();
     if (DEBUG) Serial.printf("Check WiFi network: %s\n", wmConfig.staSsid);
