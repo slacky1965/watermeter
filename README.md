@@ -7,13 +7,13 @@ You need to use mosquitto server, mqttwarn, perl and sqlite3.
 
 
 # Hardware.
-A mini wifi board with 4MB flash based on ESP-8266EX - Wemos D1 mini https://wiki.wemos.cc/products:d1:d1_mini
+A mini wifi board with 4MB flash based on ESP-8266EX - Wemos D1 mini https://www.wemos.cc/en/latest/d1/d1_mini.html
 
-Micro SD Card Shield for Wemos D1 mini - https://wiki.wemos.cc/products:d1_mini_shields:micro_sd_card_shield
+Micro SD Card Shield for Wemos D1 mini - https://www.wemos.cc/en/latest/d1_mini_shield/micro_sd.html
 
-Lithium (LiPo) Battery shield, charging & boost for Wemos D1 mini - https://wiki.wemos.cc/products:d1_mini_shields:battery_shield
+Lithium (LiPo) Battery shield, charging & boost for Wemos D1 mini - https://www.wemos.cc/en/latest/d1_mini_shield/battery.html
 
-A triple(x3) Base for Wemos D1 mini - https://wiki.wemos.cc/products:d1_mini_shields:tripler_base
+A triple(x3) Base for Wemos D1 mini - https://www.wemos.cc/en/latest/d1_mini_shield/tripler_base.html
 
 Added software debounce
 
